@@ -54,51 +54,47 @@ export const Calendar = class Calendar {
     return this.sessions[date]
   }
 
-  public calculateRealSpots(date: string) {
+  public calculateRealSpots(date: string, dateISO: string) {
+    try {
+      let realSpots: SlotDate[] = [], 
+      daySlots: SlotDate[] = this.getSlotsByDate(date)
 
-    let noConflicts = true, 
-    realSpots: SlotDate[] = [], 
-    daySlots: SlotDate[] = []
-    
-    for (const key in this.getSlots) {
-      if (key === date) {
-        daySlots = this.getSlotsByDate(date)
-      }
+      daySlots.forEach((daySlot: SlotDate) => {
+        if (this.getSessionSlots && this.getSessionsByDate(date)) {
+
+          let noConflicts = true
+          this.getSessionsByDate(date).forEach((sessionSlot: SlotDate) => {
+            let sessionStart = getUTCValueOf(`${dateISO} ${sessionSlot.start}`, DATE_FORMAT.hoursAndMinutes, false)
+            let sessionEnd = getUTCValueOf(`${dateISO} ${sessionSlot.end}`, DATE_FORMAT.hoursAndMinutes, false)
+            let start = getUTCValueOf(`${dateISO} ${daySlot.start}`, DATE_FORMAT.hoursAndMinutes, false)
+            let end = getUTCValueOf(`${dateISO} ${daySlot.end}`, DATE_FORMAT.hoursAndMinutes, false)
+
+            if (sessionStart > start && sessionEnd < end) {
+              realSpots.push({ start: daySlot.start, end: sessionSlot.start})
+              realSpots.push({ start: sessionSlot.end, end: daySlot.end})
+              noConflicts = false
+            } else if (sessionStart === start && sessionEnd < end) {
+              realSpots.push({ start: sessionSlot.end, end: daySlot.end})
+              noConflicts = false
+            } else if (sessionStart > start && sessionEnd === end) {
+              realSpots.push({ start: daySlot.start, end: sessionSlot.start })
+              noConflicts = false
+            } else if (sessionStart === start && sessionEnd === end) {
+              noConflicts = false
+            }
+          })
+
+          if (noConflicts) {
+            realSpots.push(daySlot)
+          }
+        } else {
+          realSpots.push(daySlot)
+        }
+      })
+      return realSpots
+    } catch(e: any) {
+      // In case any error, we just return empty to prevent any failure
+      return []
     }
-
-    daySlots.forEach((daySlot: SlotDate) => {
-			if (this.getSessionSlots && this.getSessionsByDate(date)) {
-        const dateISO = getDateISO(date)
-        let start = getUTCValueOf(`${dateISO} ${daySlot.start}`, DATE_FORMAT.hoursAndMinutes)
-        let end = getUTCValueOf(`${dateISO} ${daySlot.end}`, DATE_FORMAT.hoursAndMinutes)
-
-				this.getSessionsByDate(date).forEach((sessionSlot: SlotDate) => {
-					let sessionStart = getUTCValueOf(`${dateISO} ${sessionSlot.start}`, DATE_FORMAT.hoursAndMinutes)
-					let sessionEnd = getUTCValueOf(`${dateISO} ${sessionSlot.end}`, DATE_FORMAT.hoursAndMinutes)
-
-					if (sessionStart > start && sessionEnd < end) {
-						realSpots.push({ start: daySlot.start, end: sessionSlot.start})
-						realSpots.push({ start: sessionSlot.end, end: daySlot.end})
-						noConflicts = false
-					} else if (sessionStart === start && sessionEnd < end) {
-						realSpots.push({ start: sessionSlot.end, end: daySlot.end})
-						noConflicts = false
-					} else if (sessionStart > start && sessionEnd === end) {
-						realSpots.push({ start: daySlot.start, end: sessionSlot.start })
-						noConflicts = false
-					} else if (sessionStart === start && sessionEnd === end) {
-						noConflicts = false
-					}
-				})
-
-				if (noConflicts) {
-          console.log("No Conflicts >>>")
-					realSpots.push(daySlot)
-				}
-			} else {
-				realSpots.push(daySlot)
-			}
-		})
-    return realSpots
   }
 }

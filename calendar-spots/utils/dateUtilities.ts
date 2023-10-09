@@ -6,7 +6,7 @@ export const getUTCValueOf = (date: string, type: string, isUtc: boolean = false
   if (isUtc) {
     return moment.utc(date, type).valueOf()
   } 
-  return moment(date, type).valueOf()
+  return moment(date).valueOf()
 }
 export const getUTCDate = (date: string) => moment.utc(date).toDate()
 export const getUTCDateInSpecificFormat = (date: (string | Date), type: string) => moment.utc(date).format(type)

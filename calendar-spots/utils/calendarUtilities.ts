@@ -9,15 +9,14 @@ import { DATE_FORMAT } from "../constants";
 
 export const getOneMiniSlot = (
   startSlot: string, 
-  endSlot: string, 
-  date: string,
+  endSlot: string,
   durationBefore: number,
   duration: number,
-  durationAfter: number
+  durationAfter: number,
+  isoDate: string
 ) => {
   
-  const isoDate = getDateISO(date),
-  startHourFirst = getMomentHour(startSlot, isoDate),
+  let startHourFirst = getMomentHour(startSlot, isoDate),
   startHour = startHourFirst.format(DATE_FORMAT.hoursAndMinutes),
   endHour = addMinutes(startHourFirst, (durationBefore + duration + durationAfter)),
   clientStartHour = addMinutes(startHourFirst, durationBefore),
@@ -34,6 +33,5 @@ export const getOneMiniSlot = (
     clientEndHour: getUTCDate(`${isoDate} ${clientEndHour}`)
   }
   
-  console.log("ObjSlot >>>", objSlot)
   return objSlot;
 }
