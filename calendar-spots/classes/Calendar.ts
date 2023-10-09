@@ -1,9 +1,9 @@
 import { DATE_FORMAT } from "../constants";
-import { Slot } from "../types/Slot"
-import { SlotDate } from "../types/SlotDate";
+import { Slot } from "../interfaces/Slot"
+import { SlotDate } from "../interfaces/SlotDate";
 import { getDateISO, getUTCValueOf } from "../utils/dateUtilities"
 
-export const Calendar = class Calendar {
+export class Calendar {
   private durationAfter: number;
   private durationBefore: number;
   private slots: Slot[] = []
@@ -38,21 +38,42 @@ export const Calendar = class Calendar {
     return this.durationBefore
   }
 
+  /******************************************************
+   * Obtener los slots disponibles para cada calendario *
+   ******************************************************/
   get getSlots() {
     return this.slots
   }
 
+  /*********************************************************
+   * Obtener las sesiones en cuestion para cada calendario *
+   *********************************************************/
   get getSessionSlots() {
     return this.sessions
   }
+
+  /***********************************************
+   * Obtener los slots que ocupará el calendario *
+   * en la fecha enviada como parámetro          *
+   ***********************************************/
 
   public getSlotsByDate(date: string) {
     return this.slots[date]
   }
   
+  /**********************************************
+   * Obtener las sesiones en cuestión a través  *
+   * en la fecha enviada como parámetro         *
+   **********************************************/
   public getSessionsByDate(date: string) {
     return this.sessions[date]
   }
+
+  /***************************************************
+   * Calcular si entre spots y fechas hay conflictos *
+   * o disponibilidad para asignar el espacio de     *
+   * tiempo al usuario                               *
+   ***************************************************/
 
   public calculateRealSpots(date: string, dateISO: string) {
     try {

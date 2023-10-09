@@ -1,4 +1,4 @@
-export type ResultSlot = {
+export interface ResultSlot {
   startHour: string | Date,
   endHour: string | Date,
   clientStartHour: string | Date,

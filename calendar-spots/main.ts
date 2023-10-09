@@ -3,12 +3,15 @@ import { Calendar } from './classes/Calendar'
 import { getUTCDateInSpecificFormat, getDateISO } from "./utils/dateUtilities"
 import { DATE_FORMAT } from "./constants"
 import { getOneMiniSlot} from "./utils/calendarUtilities"
-import { ResultSlot } from "./types/ResultSlot"
+import { ResultSlot } from "./interfaces/ResultSlot"
+import { GenericFunction } from "./interfaces/GenericFunction"
 
-export const getAvailableSpots = (calendar: number, date: string, duration: number) => {
+export const getAvailableSpots: GenericFunction<number, string, number, ResultSlot[]> = (calendar, date, duration) => {
+	
+	// Uso de programación defensiva a través de try/catch
 	try {
 
-		// If some of the required args don't exist, we return an empty array
+		// Si alguno de los parámetros no existe, retornamos un arreglo vacío para no romper la ejecución
 		if (!calendar || !date || !duration) {
 			return []
 		}
